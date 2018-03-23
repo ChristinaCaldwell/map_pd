@@ -1,6 +1,6 @@
 var map;
 var lyrCarto;
-var lyrPopDensity;
+var lyrPharma;
 var owsrootUrl;
 var defaultParameters;
 var parameters;
@@ -11,7 +11,7 @@ var info;
         
     $(document).ready(function(){
 
-        map = L.map('map', {center:[53.577430, -7.812125], zoom:7, minZoom:6});
+        map = L.map('map', {center:[53.577430, -7.812125], zoom:7,minZoom:6});
                 
         lyrCarto = L.tileLayer.provider('CartoDB.Positron');
         map.addLayer(lyrCarto);
@@ -21,7 +21,7 @@ var info;
                 service : 'WFS',
                 version : '2.0',
                 request : 'GetFeature',
-                typeName : 'pop_density:counties_popdensity',
+                typeName : 'pop_density:pharma_per_p',
                 outputFormat : 'text/javascript',
                 format_options : 'callback:getJson',
                 SrsName : 'EPSG:4326',
@@ -34,8 +34,8 @@ var info;
           dataType : 'jsonp',
           jsonpCallback : 'getJson',
           success : function (response) {
-            lyrPopDensity = L.geoJson(response, {
-                style: popdenStyle,
+            lyrPharma = L.geoJson(response, {
+                style: pharmaStyle,
                 onEachFeature: onEachFeature
                 }).addTo(map);
             }
@@ -50,29 +50,29 @@ var info;
         };
 
         info.update = function (props) {
-            this._div.innerHTML = '<h4>Irish Population Density 2016</h4>' +  (props ?
-                '<b>' + props.county + '</b><br />' + props.pop_densit + ' people / km<sup>2</sup>'
+            this._div.innerHTML = '<h4>Number of Pharmacies per person</h4>' +  (props ?
+                '<b>' + props.county + '</b><br />' + props.per_1000 + ' per 1000 people'
                 : 'Hover over a county to begin');
         };
 
         info.addTo(map);
     });
         
-    function getpopColor(d) {
-        return d > 156 ? '#810f7c' :
-               d > 83  ? '#8856a7' :
-               d > 49  ? '#8c96c6' :
-               d > 34  ? '#b3cde3' :
-                         '#edf8fb' ;
+    function getpharmColor(p) {
+        return p > 0.269 ? '#980043' :
+               p > 0.187  ? '#dd1c77' :
+               p > 0.143  ? '#df65b0' :
+               p > 0.001  ? '#d7b5d8' :
+                            '#f1eef6' ;
     }
         
-    function popdenStyle(feature) {
+    function pharmaStyle(feature) {
         return {
             color: 'white',
             weight: 2,
             opacity: 1,
             fillOpacity: 0.7, 
-            fillColor: getpopColor(feature.properties.pop_densit)
+            fillColor: getpharmColor(feature.properties.per_1000)
         };
     }
 
@@ -90,7 +90,7 @@ var info;
         info.update(layer.feature.properties);
     }
     function resetHighlight(e) {
-        lyrPopDensity.resetStyle(e.target);
+        lyrPharma.resetStyle(e.target);
         info.update();
     }
 
