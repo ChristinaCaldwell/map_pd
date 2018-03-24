@@ -61,6 +61,7 @@ var uri;
         //add basic legend
         uri = "http://ec2-34-244-125-157.eu-west-1.compute.amazonaws.com:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=pop_density:pharma_per_p",
         L.wmsLegend(uri);
+        
     });
         
     function getpharmColor(p) {
