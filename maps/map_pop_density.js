@@ -53,7 +53,7 @@ var uri;
         info.update = function (props) {
             this._div.innerHTML = '<h4>Irish Population Density 2016</h4>' +  (props ?
                 '<b>' + props.county + '</b><br />' + props.pop_densit + ' people / km<sup>2</sup>'
-                : 'Hover over a county to begin');
+                : 'Hover over a county to begin and click to zoom');
         };
 
         info.addTo(map);

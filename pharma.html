@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="src/jquery-ui.min.css">
 <link rel="stylesheet" href="src/css/bulma.css">
 <link rel="stylesheet" href="plugins/leaflet.wmslegend.css">
+<link rel="styleshee" href="plugins/MapkeyIcons.css">
 <script src="src/leaflet-src.js"></script>
 <script src="src/jquery-3.3.1.js"></script>
 <script src="src/jquery-ui.min.js"></script>
@@ -43,7 +44,7 @@
                 </div>
             </div>
         </header>
-    <div class="tabs is-toggle is-right">
+    <div class="tabs is-right is-medium is-toggle">
       <ul>
         <li>
           <a href="index.html">
@@ -51,10 +52,16 @@
             <span>Population Density</span>
           </a>
         </li>
-        <li>
+        <li  class="is-active">
           <a href="pharma.html">
 <!--            <span class="icon is-small"><i class="fa fa-shopping-basket"></i></span>-->
             <span>Retail Pharmacies per person</span>
+          </a>
+        </li>
+        <li>
+          <a href="pharmaPoint.html">
+<!--            <span class="icon is-small"><i class="fa fa-shopping-basket"></i></span>-->
+            <span>Find your closest Pharmacy</span>
           </a>
         </li>
       </ul>

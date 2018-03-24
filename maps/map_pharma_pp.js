@@ -53,7 +53,7 @@ var uri;
         info.update = function (props) {
             this._div.innerHTML = '<h4>Number of Pharmacies per person</h4>' +  (props ?
                 '<b>' + props.county + '</b><br />' + props.per_1000 + ' per 1000 people'
-                : 'Hover over a county to begin');
+                : 'Hover over a county to begin and click to zoom');
         };
         
         info.addTo(map);
