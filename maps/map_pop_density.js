@@ -8,6 +8,7 @@ var URL;
 var objBasemaps;
 var objOverlays;
 var info;
+var uri;
         
     $(document).ready(function(){
 
@@ -56,7 +57,11 @@ var info;
         };
 
         info.addTo(map);
-    });
+
+        uri = "http://ec2-34-244-125-157.eu-west-1.compute.amazonaws.com:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=pop_density:counties_popdensity",
+        L.wmsLegend(uri);
+
+        });
         
     function getpopColor(d) {
         return d > 156 ? '#810f7c' :
@@ -104,3 +109,4 @@ var info;
     function zoomToFeature(e){
         map.fitBounds(e.target.getBounds());
     }
+    

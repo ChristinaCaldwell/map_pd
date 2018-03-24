@@ -8,6 +8,7 @@ var URL;
 var objBasemaps;
 var objOverlays;
 var info;
+var uri;
         
     $(document).ready(function(){
 
@@ -54,8 +55,12 @@ var info;
                 '<b>' + props.county + '</b><br />' + props.per_1000 + ' per 1000 people'
                 : 'Hover over a county to begin');
         };
-
+        
         info.addTo(map);
+        
+        //add basic legend
+        uri = "http://ec2-34-244-125-157.eu-west-1.compute.amazonaws.com:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=pop_density:pharma_per_p",
+        L.wmsLegend(uri);
     });
         
     function getpharmColor(p) {
