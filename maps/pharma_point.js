@@ -5,12 +5,16 @@ var lyrPharma;
 var lyrCounties;
 var ctlDraw;
 var fgpDrawnItems;
+var mki;
+var groupMarkers;
+var layer1;
+var layer2;
         
     $(document).ready(function(){
 
         map = L.map('map', {center:[53.577430, -7.812125], zoom:7,minZoom:6});
                 
-        lyrCarto = L.tileLayer.provider('CartoDB.Positron');
+        lyrCarto = L.tileLayer.provider('OpenStreetMap.HOT');
         map.addLayer(lyrCarto);
         fgpDrawnItems = new L.FeatureGroup();
         fgpDrawnItems.addTo(map);
@@ -23,7 +27,7 @@ var fgpDrawnItems;
             return this._div;
         };
         info.update = function (props) {
-            this._div.innerHTML = '<h4>Click anywhere on the map to calculate your nearest pharmacy</h4>';
+            this._div.innerHTML = '<h4>Click anywhere on the map to locate your nearest pharmacy</h4>';
         };
         info.addTo(map);
         
@@ -36,30 +40,49 @@ var fgpDrawnItems;
             request : 'GetFeature',
             typeName : 'pop_density:counties_pharmacies',
             outputFormat : 'text/javascript',
-            format_options : 'callback:getJson',
+            format_options : 'callback:getJson1',
+            SrsName : 'EPSG:4326',
+            
+        };
+        
+        var countiesParameters = {
+            service : 'WFS',
+            version : '2.0',
+            request : 'GetFeature',
+            typeName : 'pop_density:counties_popdensity',
+            outputFormat : 'text/javascript',
+            format_options : 'callback:getJson2',
             SrsName : 'EPSG:4326'
         };
+    
 
-        var groupMarkers = L.markerClusterGroup();
-        var mki = L.icon.mapkey({icon:"mki mki-pharmacy",color:'white',background:'#008000',size:25});
+        groupMarkers = L.markerClusterGroup();
+        mki = L.icon.mapkey({icon:"mki mki-pharmacy",color:'white',background:'#008000',size:25});
         
-        $.ajax({
-        url : owsrootUrl + L.Util.getParamString(L.Util.extend(pharmaParameters)),
-        dataType : 'jsonp',
-        jsonpCallback : 'getJson',
-        success : function (response) {
-            lyrPharma = L.geoJson(response,{
-                pointToLayer:function(feature, latlng){
-                    return L.marker(latlng,{icon:mki});
-                }, onEachFeature: function(feature,layer){
-                    var att = feature.properties
-                    layer.bindPopup("<b>Pharmacy Name: </b>"+att.name);
+        $.when(
+            $.ajax({
+            url : owsrootUrl + L.Util.getParamString(L.Util.extend(pharmaParameters)),
+            dataType : 'jsonp',
+            jsonpCallback : 'getJson1',
+            success : function (response){
+                layer1 = response;
                 }
-            });
-            groupMarkers.addLayer(lyrPharma);
-            map.addLayer(groupMarkers);
+            }),
+            
+            $.ajax({
+            url : owsrootUrl + L.Util.getParamString(L.Util.extend(countiesParameters)),
+            dataType : 'jsonp',
+            jsonpCallback : 'getJson2',
+            success : function (response){
+                layer2 = response;
+                }
+            })
+        ).then (function(){
+                stylePharamacies (layer1);
+                styleCounties (layer2);
             }
-        });
+        );
+                      
 // **********Map click function ************
         
             map.on('click', function(e){
@@ -68,7 +91,7 @@ var fgpDrawnItems;
                 var strTable = "<table class ='table is-hoverable'>";
                 strTable += "<tr><th>Name</th><th>Distance</th><th>Direction</th></tr>";
                 var nrPharma = returnClosestLayer(lyrPharma, llRef);
-                strTable += "<tr><td>"+nrPharma.att.name+"</td><td>"+nrPharma.distance.toFixed(0)+"m</td><td>"+nrPharma.bearing.toFixed(0)+"</td></tr>";
+                strTable += "<tr><td>"+nrPharma.att.name+"</td><td>"+(nrPharma.distance/1000).toFixed(1)+"km</td><td>"+nrPharma.bearing.toFixed(0)+"</td></tr>";
                 strTable += "</table>"; 
                 newMarker.bindTooltip(strTable, {maxWidth:400})
                 
@@ -87,4 +110,29 @@ function returnClosestLayer(lyrGroup, llRef){
     return nearest;
 }
 
+function stylePharamacies (response) {
+            lyrPharma = L.geoJson(response,{
+                pointToLayer:function(feature, latlng){
+                    return L.marker(latlng,{icon:mki});
+                }, onEachFeature: function(feature,layer){
+                    var att = feature.properties
+                    layer.bindPopup("<b>Pharmacy Name: </b>"+att.name);
+                }
+            });
+            groupMarkers.addLayer(lyrPharma);
+            map.addLayer(groupMarkers);
+            }
+function styleCounties (response){
+            lyrPopDensity = L.geoJson(response, {
+                style: countyStyle
+                }).addTo(map);
+            }
+function countyStyle(feature) {
+        return {
+            color: 'navy',
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0,
+        };
+    }
         
