@@ -57,56 +57,55 @@ var uri;
         };
 
         info.addTo(map);
-
+//*****************Map legend read from Geoserver
         uri = "http://ec2-34-244-125-157.eu-west-1.compute.amazonaws.com:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=pop_density:counties_popdensity",
         L.wmsLegend(uri);
 
         });
         
-    function getpopColor(d) {
-        return d > 156 ? '#810f7c' :
-               d > 83  ? '#8856a7' :
-               d > 49  ? '#8c96c6' :
-               d > 34  ? '#b3cde3' :
-                         '#edf8fb' ;
-    }
-        
-    function popdenStyle(feature) {
-        return {
-            color: 'white',
-            weight: 2,
-            opacity: 1,
-            fillOpacity: 0.7, 
-            fillColor: getpopColor(feature.properties.pop_densit)
-        };
-    }
-
-    function highlightFeature(e) {
-        var layer = e.target;
-        layer.setStyle({
-            weight: 4,
-            color: '#666',
-            fillOpacity: 0.9
-        });
-
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-            }
-        info.update(layer.feature.properties);
-    }
-    function resetHighlight(e) {
-        lyrPopDensity.resetStyle(e.target);
-        info.update();
-    }
-
-    function onEachFeature(feature, layer) {
-    layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
-        click: zoomToFeature,
-    });
+function getpopColor(d) {
+    return d > 156 ? '#810f7c' :
+           d > 83  ? '#8856a7' :
+           d > 49  ? '#8c96c6' :
+           d > 34  ? '#b3cde3' :
+                     '#edf8fb' ;
 }
-    function zoomToFeature(e){
-        map.fitBounds(e.target.getBounds());
-    }
-    
+
+function popdenStyle(feature) {
+    return {
+        color: 'white',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.7, 
+        fillColor: getpopColor(feature.properties.pop_densit)
+    };
+}
+
+function highlightFeature(e) {
+    var layer = e.target;
+    layer.setStyle({
+        weight: 4,
+        color: '#666',
+        fillOpacity: 0.9
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+        }
+    info.update(layer.feature.properties);
+}
+function resetHighlight(e) {
+    lyrPopDensity.resetStyle(e.target);
+    info.update();
+}
+
+function onEachFeature(feature, layer) {
+layer.on({
+    mouseover: highlightFeature,
+    mouseout: resetHighlight,
+    click: zoomToFeature,
+});
+}
+function zoomToFeature(e){
+    map.fitBounds(e.target.getBounds());
+}
